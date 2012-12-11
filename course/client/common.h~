@@ -1,0 +1,46 @@
+#ifndef COMMON_H_INCLUDED
+#define COMMON_H_INCLUDED
+#include<string>
+#include<cstring>
+#include<vector>
+#include<map>
+#include<cstdio>
+#include<cstdlib>
+
+using namespace std;
+
+//type of conditon
+struct JoinCon{
+    string strKey;
+    string firstCol;
+};
+
+
+struct Condition{
+    int kind;
+    string strConst;
+    JoinCon* joinCon;
+};
+struct Colume{
+    int order;
+    int type;
+    bool preKey;
+    //vector<Condition> cond;
+
+};
+struct Table{
+    string tableName;
+    vector<string> columeName;
+    map<string,Colume*> columeType;
+    FILE tarFile;
+
+};
+
+
+struct Scheme{
+    vector<Table*> tableList;
+
+};
+
+
+#endif // COMMON_H_INCLUDED

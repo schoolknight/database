@@ -1,0 +1,48 @@
+#ifndef SELECTPARSER_H_INCLUDED
+#define SELECTPARSER_H_INCLUDED
+
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <vector>
+#include <map>
+#include <cassert>
+#include<algorithm>
+
+#include "../include/client.h"
+#include "tokenize.h"
+#include "split_csv.h"
+#include "common.h"
+#include "baseparser.h"
+
+using namespace std;
+
+
+class SelectParser : public BaseParser{
+    private:
+        //whole scheme
+        //Scheme* mainScheme;
+        //column orderg
+        map<string,int> ansList;
+        //select condition
+        map<string,vector <Condition> > condList;
+        //
+        vector<int> comList[50];
+        vector<int> condTableList[50];
+        vector<int> questTable;
+        vector<string> row;
+        bool checkToken(const string &key,vector<Condition> &rule,const string &colName );
+        void selectExec(int step,vector<string> &result);
+
+
+    public:
+        SelectParser(const string& sql,Scheme* tar);
+        void execute(vector<string> &result);
+
+
+
+};
+
+#endif // SELECTPARSER_H_INCLUDED

@@ -1,0 +1,14 @@
+#ifndef BASEPARSER_H_INCLUDED
+#define BASEPARSER_H_INCLUDED
+#include "common.h"
+class BaseParser{
+    protected:
+        Scheme* mainScheme;
+    public:
+        BaseParser();
+        virtual void execute(vector<string> &result){};
+        ~BaseParser(){};
+};
+
+
+#endif // BASEPARSER_H_INCLUDED

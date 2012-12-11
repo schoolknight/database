@@ -1,0 +1,32 @@
+#ifndef INSERTPARSER_H_INCLUDED
+#define INSERTPARSER_H_INCLUDED
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <vector>
+#include <map>
+#include <cassert>
+#include<algorithm>
+
+#include "../include/client.h"
+#include "tokenize.h"
+#include "split_csv.h"
+#include "common.h"
+#include "baseparser.h"
+
+using namespace std;
+
+class InsertParser : public BaseParser{
+    private:
+        Table* tarTable;
+        vector<string> valueList;
+        int colLen;
+    public:
+        InsertParser(const string& sql,Scheme* tar);
+        void execute(vector<string> &result);
+
+};
+
+#endif // INSERTPARSER_H_INCLUDED

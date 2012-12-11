@@ -1,0 +1,7 @@
+5
+SELECT t11 , t12 , t21 , t22 FROM table1 , table2 ;
+INSERT INTO table1 VALUES ( 3,'table1_3' ); 
+SELECT t11 , t12 , t21 , t22 FROM table1 , table2 WHERE t22 = 'table2_1' AND t11 = t21 ;
+INSERT INTO table2 VALUES ( 5,'table1_1' );
+SELECT t11 , t12 , t21 , t22 FROM table1 , table2 WHERE t12 = t22 ;
+

@@ -1,0 +1,14 @@
+2
+table1
+4
+t11		INTEGER
+t12		VARCHAR(20)
+1
+t11
+table2
+2
+t21		INTEGER
+t22		VARCHAR(20)
+1
+t21
+
