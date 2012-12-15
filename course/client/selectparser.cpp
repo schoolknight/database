@@ -32,7 +32,7 @@ SelectParser::SelectParser(const string& sql,Scheme* tar){
     /*for(int j = 0;j < comList[1].size();j ++)
         printf("com0 %d = %d \n",j,comList[1][j]);
 */
-	//获得在结果中的对应位置    
+	//获得在结果中的对应位置
 	for(int j = 0;j < tmpList.size();j ++)
         ansList[tmpList[j]] = j;
     row.clear();
@@ -59,7 +59,7 @@ SelectParser::SelectParser(const string& sql,Scheme* tar){
 	string tarCon;
 	Condition tmpCon;
 	//printf("before where\n");
-	//获得条件	
+	//获得条件
 	for (i++; i < token.size();i ++){
         //printf("token is %s \n" ,token[i].c_str());
         if (token[i] == "," || token[i] == "AND")
@@ -67,11 +67,11 @@ SelectParser::SelectParser(const string& sql,Scheme* tar){
         switch (flag){
             case 0:
                 //tmpCon = new Condition;
-		//条件的第一部分是列名                
+		//条件的第一部分是列名
 		tarCon = token[i];
                 break;
             case 1:
-		//第二部分是符号                
+		//第二部分是符号
 		if (token[i] == "=")
                     tmpCon.kind = 0;
                 if (token[i] == "<")
@@ -80,7 +80,7 @@ SelectParser::SelectParser(const string& sql,Scheme* tar){
                     tmpCon.kind = 2;
                 break;
             case 2:
-		//第三部分可以是个常量，也可以是个列名                
+		//第三部分可以是个常量，也可以是个列名
 		tmpCon.strConst = token[i];
 
                 //如果是个列名
@@ -116,7 +116,7 @@ SelectParser::SelectParser(const string& sql,Scheme* tar){
                 }
                 condList[tarCon].push_back(tmpCon);
                 flag = -1;
-                
+
                 for(int j = 0;j < mainScheme->tableList.size();j ++)
                     //be able to find the column
                     if (mainScheme->tableList[j]->columeType.find(tarCon)!= mainScheme->tableList[j]->columeType.end()){
@@ -169,9 +169,12 @@ void SelectParser::selectExec(int step,vector<string> &result){
 	int curTNum = questTable[step];
 	//当期表的指针
 	Table* curTable = mainScheme->tableList[curTNum];
-	fin = fopen(((string) "data/" + curTable->tableName).c_str(), "r");
+	//fin = fopen(((string) "data/" + curTable->tableName).c_str(), "r");
     bool flag;
-	while (fgets(buf, 65536, fin) != NULL) {
+	int curOffset = 0
+	int tmpLen;
+	char* tarPos = curTable->storeUnit->getData(curOffset , tmpLen);
+	while (tarPos != NULL) {
         int len = strlen(buf);
 		if (len > 0 && buf[len - 1] == '\n') {
 			buf[len - 1] = '\0';
@@ -183,7 +186,7 @@ void SelectParser::selectExec(int step,vector<string> &result){
 		split_csv(buf, token);
 		flag = true;
 		int tmpCol;
-		//检查这一列的数据		
+		//检查这一列的数据
 		for(int i = 0;i < condTableList[curTNum].size();i ++){
             tmpCol = condTableList[curTNum][i];
             if (checkToken(token[tmpCol],condList[curTable->columeName[tmpCol]],curTable->columeName[tmpCol]))
@@ -191,7 +194,7 @@ void SelectParser::selectExec(int step,vector<string> &result){
             flag = false;
             break;
         }
-	//满足条件，将相应列插入的答案中        
+	//满足条件，将相应列插入的答案中
 	if (flag){
             for(int i = 0;i < comList[curTNum].size();i ++){
                 tmpCol = comList[curTNum][i];

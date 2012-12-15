@@ -6,6 +6,7 @@
 #include<map>
 #include<cstdio>
 #include<cstdlib>
+#include"hybridstorage.h"
 
 using namespace std;
 
@@ -35,8 +36,10 @@ struct Colume{
 struct Table{
     string tableName;
     vector<string> columeName;
+    vector<int> typeList;
     map<string,Colume*> columeType;
     //FILE tarFile;
+    HybridStorage* storeUnit;
 
 };
 
@@ -46,5 +49,9 @@ struct Scheme{
 
 };
 
+typedef unsigned char uchar;
 
+const int STD_BUFF = 100;
+const int MAX_MEM = 500000000;
+const int BLOCK_LEN = 30000;
 #endif // COMMON_H_INCLUDED

@@ -16,6 +16,8 @@ map<string, vector<string> > table2type;
 map<string, vector<string> > table2pkey;*/
 vector<string> result;
 Scheme totScheme;
+char totBuffer[MAX_MEM];
+
 
 //建立表
 //table 表名
@@ -25,17 +27,22 @@ Scheme totScheme;
 void create(const string& table, const vector<string>& column,
 	const vector<string>& type, const vector<string>& key)
 {
+	//FILE *fout;
+	//fout = fopen(((string) "data/" + table).c_str(), "a+");
+	//fclose(fout);
 	/*table2name[table] = column;
 	table2type[table] = type;
 	table2pkey[table] = key;*/
 	Table* tmpTable = new Table;
 	//get the name;
 	tmpTable->tableName = table;
+	tmpTable->storeUnit = new HybridStorage(table);
 	//get the columns' name
 	tmpTable->columeName = column;
     Colume*tmp;
     //tmp.cond.clear();
     //建立表内的列的对应，类型和顺序
+    tmpTable->typeList.clear();
     for(int i = 0;i < type.size();i ++){
         tmp = new Colume;
         tmp->preKey = 0;
@@ -43,6 +50,7 @@ void create(const string& table, const vector<string>& column,
             tmp->type = 0;
         else
             tmp->type = 1;
+        tmpTable->typeList.push_back(tmp->type);
         tmp->order = i;
         tmpTable->columeType[column[i]] = tmp;
     }
@@ -63,28 +71,72 @@ void create(const string& table, const vector<string>& column,
 //TODO 训练函数
 void train(const vector<string>& query, const vector<double>& weight)
 {
-	// I am too clever; I don't need it.
+	vector<string, double> tmpVec;
+	tmpVec.clear();
+	for(int i = 0;i < totScheme.tableList.size();i ++){
+        tmpVec[totScheme.tableList[i]->tableName] = 0;
+    vector<string> token;
+
+    //计算权值
+    for(int i =0;i < query.size();i ++){
+        token.clear();
+        tokenize(query[i].c_str(),token);
+        int j;
+        for(j = 0;j < token.size();j ++)
+            if (token[i] == "FROM")
+                break;
+        for(j++;j < token.size();j ++){
+            if (token[i] == "," || token[i] == ";")
+                continue;
+            if (token[i] == "WHERE")
+                break;
+            tmpVec[token[i]] += weight[i];
+
+        }
+    }
+    //冒泡排序表
+    int tmpLen = totScheme.tableList.size();
+    Table* tmpTable;
+    for(int i = 0;i < tmpLen;i ++)
+        for(int j = 0;j < tmpLen - 1 - i;j ++)
+            if (tmpVec[totScheme ->tableList[j]->tableName] < tmpVec[totScheme ->tableList[j + 1]->tableName]){
+                tmpTable = totScheme -> tableList[j];
+                totScheme -> tableList[j] = totScheme -> tableList[j + 1];
+                totScheme -> tableList[j + 1] = tmpTable ;
+            }
 }
 
 //读入初始数据
 void load(const string& table, const vector<string>& row)
 {
-	FILE *fout;
-	int i;
-
-	fout = fopen(((string) "data/" + table).c_str(), "w");
-	assert(fout != NULL);
-
-	for (i = 0; i < row.size(); i++)
-		fprintf(fout, "%s\n", row[i].c_str());
-
-	fclose(fout);
+    vector<string> token;
+    for(int i = 0;i < totScheme->tableList.size();i ++)
+        if (table == totScheme->tableList[i]->tableName){
+            totScheme->tableList[i]->storeUnit->writeStart();
+            //token.clear();
+            for(int j = 0;j < row.size();j ++){
+                token.clear();
+                split_csv(row[j].c_str(),token);
+                totScheme->tableList[i]->storeUnit->writeData(token,totScheme->tableList[i]->typeList);
+            }
+            totScheme->tableList[i]->storeUnit->writeFinish();
+            break;
+        }
 }
 
 //TODO 建立索引之类的
-void preprocess()
-{
-	// I am too clever; I don't need it.
+void preprocess(){
+    char* tmpP = totBuffer;
+    int reMem = MAX_MEM;
+    int tmpM;
+    //迁移到内存
+    for(int i = 0;i < totScheme->tableList.size();i ++){
+        tmpM = totScheme->tableList[i]->storeUnit->moveToMem(tmpP,reMem);
+        if (tmpM == 0)
+            break;
+        tmpP += (reMem - tmpM);
+        reMem = tmpM;
+    }
 }
 
 //执行SQL语句
